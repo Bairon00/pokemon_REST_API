@@ -94,6 +94,7 @@ class Entrenador(bd.model):
     pokemonPrincipal=db.colum(db.String(30),db.ForeignKey('pokemon.name'))
     rel_name = db.relationship('Pokemones')
 
+
      def __repr__(self):
         return '<Fav_people %r>' % self.name
 
