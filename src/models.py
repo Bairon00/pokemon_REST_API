@@ -7,6 +7,7 @@ class User(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(80), unique=False, nullable=False)
     is_active = db.Column(db.Boolean(), unique=False, nullable=False)
+    
 
     def __repr__(self):
         return '<User %r>' % self.email
@@ -23,7 +24,9 @@ class Pokemones(db.Model):
     ataque = db.Column(db.String(30), unique=False, nullable=False)
     defensa = db.Column(db.String(30), unique=False, nullable=False)
     evoluciones = db.Column(db.String(30), unique=False, nullable=False)
-    imagene = db.Column(db.String(30), unique=False, nullable=False)
+    imagen = db.Column(db.String(30), unique=False, nullable=False)
+    rel_name = db.relationship('Entrenador', backref='pokemones', lazy=True)
+    
     def __repr__(self):
         return '<Pokemones %r>' % self.name
 
@@ -41,6 +44,7 @@ class Especie(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     especie = db.Column(db.String(30), unique=True, nullable=False)
     habilidades = db.Column(db.String(30), unique=False, nullable=False)
+    
     
     def __repr__(self):
         return '<Especie %r>' % self.especie
@@ -75,11 +79,11 @@ class Fav_Especie(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email =  db.Column(db.String(120), db.ForeignKey('user.email'))
     Especie_especie=db.Column(db.String(30),db.ForeignKey('especie.especie'))
-    rel_especie=db.relationship('Especie')
     rel_user = db.relationship('User')
+    rel_especie=db.relationship('Especie')
 
     def __repr__(self):
-        return '<Fav_people %r>' % self.especie
+        return '<Fav_people %r>' % self.email
 
     def serialize(self):
         return {
@@ -88,20 +92,19 @@ class Fav_Especie(db.Model):
             "email": self.email
             # do not serialize the password, its a security breach
         }
-class Entrenador(bd.model):
+class Entrenador(db.Model):
     id=db.Column(db.Integer,primary_key=True)
     name=db.Column(db.String(80),unique=False, nullable=False)
-    pokemonPrincipal=db.colum(db.String(30),db.ForeignKey('pokemon.name'))
-    rel_name = db.relationship('Pokemones')
+    pokemon_principal=db.Column(db.Integer,db.ForeignKey('pokemones.id'))
+    
 
 
-     def __repr__(self):
+    def __repr__(self):
         return '<Fav_people %r>' % self.name
 
-        def serialize(self):
+    def serialize(self):
             return{
                 "id":self.id,
-                "name":self.name
-                "pokemonPrincipal":self.pokemonPrincipal
-
+                "name":self.name,
+                "pokemon_principal":self.pokemones.name
             }
